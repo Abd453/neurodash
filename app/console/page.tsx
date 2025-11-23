@@ -6,87 +6,19 @@ import Link from 'next/link';
 import { ModelCard } from '@/components/console/model-card';
 import { FilterSidebar } from '@/components/console/filter-sidebar';
 import { ComparisonBar } from '@/components/console/comparison-bar';
-
-// 1. Define Data
-const allModels = [
-  {
-    id: 1,
-    name: 'GPT-4o',
-    company: 'OpenAI',
-    mmlu: 88.7,
-    context: '128k',
-    contextVal: 128,
-    type: 'Closed API',
-    audited: true,
-  },
-  {
-    id: 2,
-    name: 'Claude 3.5 Sonnet',
-    company: 'Anthropic',
-    mmlu: 88.3,
-    context: '200k',
-    contextVal: 200,
-    type: 'Closed API',
-    audited: true,
-  },
-  {
-    id: 3,
-    name: 'Gemini 1.5 Pro',
-    company: 'Google',
-    mmlu: 85.9,
-    context: '1000k',
-    contextVal: 1000,
-    type: 'Closed API',
-    audited: false,
-  },
-  {
-    id: 4,
-    name: 'Llama 3.1 (405B)',
-    company: 'Meta',
-    mmlu: 87.3,
-    context: '128k',
-    contextVal: 128,
-    type: 'Open-weight',
-    audited: true,
-  },
-  {
-    id: 5,
-    name: 'Mistral Large 2',
-    company: 'Mistral',
-    mmlu: 84.0,
-    context: '32k',
-    contextVal: 32,
-    type: 'Open-weight',
-    audited: false,
-  },
-  {
-    id: 6,
-    name: 'Grok-1.5',
-    company: 'xAI',
-    mmlu: 81.3,
-    context: '128k',
-    contextVal: 128,
-    type: 'Open-weight',
-    audited: false,
-  },
-];
+// IMPORT THE DATA
+import { mockModels } from '@/app/data/mockModels';
 
 export default function ConsolePage() {
-  // --- 2. State Management ---
+  // --- STATE ---
   const [search, setSearch] = useState('');
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [minContext, setMinContext] = useState(0);
-
-  // State for Comparison (Checking/Unchecking)
   const [comparisonIds, setComparisonIds] = useState<number[]>([]);
-
-  // State for Mobile Responsive Sidebar
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  // --- 3. Handlers ---
-
-  // Toggle Company Checkbox
+  // --- HANDLERS ---
   const toggleCompany = (company: string) => {
     setSelectedCompanies((prev) =>
       prev.includes(company)
@@ -95,29 +27,25 @@ export default function ConsolePage() {
     );
   };
 
-  // Toggle Type Checkbox
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
   };
 
-  // Toggle Comparison Logic (Check/Uncheck)
   const toggleCompare = (id: number) => {
     setComparisonIds((prev) => {
       if (prev.includes(id)) {
-        // Remove if already checked
         return prev.filter((cid) => cid !== id);
       } else {
-        // Add if not checked
         return [...prev, id];
       }
     });
   };
 
-  // --- 4. Filtering Logic (Memoized) ---
+  // --- FILTERING LOGIC ---
   const filteredModels = useMemo(() => {
-    return allModels.filter((model) => {
+    return mockModels.filter((model) => {
       const matchesSearch =
         model.name.toLowerCase().includes(search.toLowerCase()) ||
         model.company.toLowerCase().includes(search.toLowerCase());
@@ -135,10 +63,9 @@ export default function ConsolePage() {
     });
   }, [search, selectedCompanies, selectedTypes, minContext]);
 
-  // --- 5. JSX Render ---
   return (
     <div className="min-h-screen bg-[#0B0E14] text-white flex flex-col relative overflow-hidden pb-24">
-      {/* Background Blobs */}
+      {/* Hero Blobs */}
       <div className="blob blob-1 opacity-20"></div>
       <div className="blob blob-2 opacity-20"></div>
 
@@ -155,7 +82,7 @@ export default function ConsolePage() {
         </div>
       </nav>
 
-      {/* Page Content */}
+      {/* Content */}
       <div className="flex-1 max-w-[1600px] mx-auto w-full p-4 md:p-8">
         {/* Header */}
         <div className="mb-8">
@@ -167,7 +94,7 @@ export default function ConsolePage() {
           </p>
         </div>
 
-        {/* Search Bar */}
+        {/* Search */}
         <div className="relative mb-6 md:mb-10">
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
@@ -178,15 +105,11 @@ export default function ConsolePage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search models by name, company, or description..."
-            className="
-              w-full bg-[#131720] border border-white/10 rounded-xl py-4 pl-12 pr-4 
-              text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 
-              transition-all placeholder:text-slate-600
-            "
+            className="w-full bg-[#131720] border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600"
           />
         </div>
 
-        {/* Mobile Filter Toggle Button */}
+        {/* Mobile Toggle */}
         <div className="lg:hidden mb-6">
           <button
             onClick={() => setShowMobileFilters(!showMobileFilters)}
@@ -198,13 +121,12 @@ export default function ConsolePage() {
         </div>
 
         <div className="flex flex-col lg:flex-row items-start gap-8">
-          {/* Left Sidebar Filters (Responsive) */}
+          {/* Sidebar */}
           <div
             className={`w-full lg:w-auto lg:sticky lg:top-28 ${
               showMobileFilters ? 'block' : 'hidden lg:block'
             }`}
           >
-            {/* Label for Desktop */}
             <div className="hidden lg:flex items-center gap-2 mb-6 text-cyan-400 font-bold text-lg border-l-4 border-cyan-500 pl-3">
               Filters
             </div>
@@ -215,25 +137,22 @@ export default function ConsolePage() {
               onTypeChange={toggleType}
               minContext={minContext}
               onContextChange={setMinContext}
-              isVisibleMobile={true} // Always true because parent handles visibility
+              isVisibleMobile={true}
             />
           </div>
 
-          {/* Main Cards Grid */}
+          {/* Grid */}
           <div className="flex-1 w-full">
-            {/* Sort & Count Bar */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
               <p className="text-slate-500 text-sm">
-                Showing {filteredModels.length} of {allModels.length} models
+                Showing {filteredModels.length} of {mockModels.length} models
               </p>
-
               <button className="flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-500 transition-colors">
                 <ListFilter size={16} /> Sort by:{' '}
                 <span className="text-cyan-500">MMLU Score</span>
               </button>
             </div>
 
-            {/* Grid */}
             {filteredModels.length === 0 ? (
               <div className="p-12 border border-dashed border-white/10 rounded-xl text-center text-slate-500">
                 No models match your criteria.
@@ -261,9 +180,7 @@ export default function ConsolePage() {
                     context={model.context}
                     type={model.type}
                     audited={model.audited}
-                    // LOGIC: This boolean controls the visual state (Checked/Unchecked)
                     isComparing={comparisonIds.includes(model.id)}
-                    // LOGIC: This function updates the array
                     onToggleCompare={() => toggleCompare(model.id)}
                   />
                 ))}
@@ -273,9 +190,9 @@ export default function ConsolePage() {
         </div>
       </div>
 
-      {/* Bottom Bar (Only shows if items selected) */}
+      {/* Comparison Bar */}
       <ComparisonBar
-        selectedModels={allModels.filter((m) => comparisonIds.includes(m.id))}
+        selectedModels={mockModels.filter((m) => comparisonIds.includes(m.id))}
         onClear={() => setComparisonIds([])}
         onRemove={toggleCompare}
       />

@@ -20,99 +20,50 @@ import {
   CartesianGrid,
   Cell,
 } from 'recharts';
-
-// --- 1. EXPANDED DATASETS ---
-// In a real app, this would come from an API based on the IDs
-const fullModelData = [
-  {
-    id: 1,
-    name: 'GPT-4o',
-    company: 'OpenAI',
-    color: '#06B6D4', // Cyan
-    mmlu: 88.7,
-    humanEval: 90.2,
-    context: '128k',
-    contextVal: 128000,
-    safety: 95,
-    governance: 85,
-    performance: 98,
-    description:
-      "GPT-4o is OpenAI's latest flagship multimodal model with enhanced reasoning capabilities. It achieves state-of-the-art performance across audio, vision, and text benchmarks.",
-  },
-  {
-    id: 2,
-    name: 'Claude 3.5 Sonnet',
-    company: 'Anthropic',
-    color: '#F97316', // Orange
-    mmlu: 88.3,
-    humanEval: 92.0,
-    context: '200k',
-    contextVal: 200000,
-    safety: 98,
-    governance: 92,
-    performance: 96,
-    description:
-      "Claude 3.5 Sonnet represents Anthropic's most capable model, excelling at complex reasoning, coding, and nuanced conversation. Built with Constitutional AI.",
-  },
-  {
-    id: 3,
-    name: 'Gemini 1.5 Pro',
-    company: 'Google',
-    color: '#8B5CF6', // Purple
-    mmlu: 85.9,
-    humanEval: 84.1,
-    context: '1000k',
-    contextVal: 1000000,
-    safety: 88,
-    governance: 80,
-    performance: 89,
-    description:
-      "Google's mid-size multimodal model with a massive context window, optimized for scaling across a wide variety of tasks.",
-  },
-  {
-    id: 4,
-    name: 'Llama 3.1',
-    company: 'Meta',
-    color: '#10B981',
-    mmlu: 87.3,
-    humanEval: 85,
-    contextVal: 128000,
-    safety: 80,
-    governance: 70,
-    performance: 92,
-    description: 'Open weights model from Meta.',
-  },
-  // ... add other models as needed to match IDs
-];
+// 1. IMPORT THE CENTRAL DATA SOURCE
+import { mockModels } from '@/app/data/mockModels';
 
 function CompareContent() {
   const searchParams = useSearchParams();
   const idsParam = searchParams.get('ids');
 
-  // Filter models based on URL params
+  // 2. FILTER MODELS FROM IMPORTED DATA
   const selectedIds = idsParam ? idsParam.split(',').map(Number) : [];
-  const models = fullModelData.filter((m) => selectedIds.includes(m.id));
+  const models = mockModels.filter((m) => selectedIds.includes(m.id));
 
-  // Prepare Data for Radar Chart
+  // 3. PREPARE RADAR DATA
+  // Note: Accessing specific score metrics inside m.performance based on your mockModels structure
   const radarData = [
     {
       subject: 'Safety',
-      ...models.reduce((acc, m) => ({ ...acc, [m.name]: m.safety }), {}),
+      ...models.reduce(
+        (acc, m) => ({ ...acc, [m.name]: m.performance.safety }),
+        {}
+      ),
     },
     {
       subject: 'Governance',
-      ...models.reduce((acc, m) => ({ ...acc, [m.name]: m.governance }), {}),
+      ...models.reduce(
+        (acc, m) => ({ ...acc, [m.name]: m.performance.governance }),
+        {}
+      ),
     },
     {
       subject: 'Performance',
-      ...models.reduce((acc, m) => ({ ...acc, [m.name]: m.performance }), {}),
+      ...models.reduce(
+        (acc, m) => ({ ...acc, [m.name]: m.performance.performance }),
+        {}
+      ),
     },
   ];
 
   if (models.length === 0) {
     return (
-      <div className="text-white p-10">
-        No models selected. Go back to console.
+      <div className="min-h-screen bg-[#0B0E14] text-white p-10 flex flex-col items-center justify-center">
+        <p className="text-slate-400 mb-4">No models selected.</p>
+        <Link href="/console" className="text-cyan-400 hover:underline">
+          Go back to Console
+        </Link>
       </div>
     );
   }
@@ -132,7 +83,7 @@ function CompareContent() {
         </div>
 
         {/* Pills */}
-        <div className="flex gap-3 mb-12">
+        <div className="flex flex-wrap gap-3 mb-12">
           {models.map((m) => (
             <div
               key={m.id}
@@ -229,7 +180,7 @@ function CompareContent() {
                               {payload[0].payload.name}
                             </p>
                             <p className="text-cyan-400">
-                              Score: {payload[0].value}
+                              Score: {payload[0].value}%
                             </p>
                           </div>
                         );
@@ -291,7 +242,6 @@ function CompareContent() {
                 />
                 <Bar dataKey="contextVal" fill="#8884d8" radius={[4, 4, 0, 0]}>
                   {models.map((entry, index) => (
-                    // Dynamic fill based on model color
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Bar>
@@ -360,27 +310,48 @@ function CompareContent() {
                     </td>
                   ))}
                 </tr>
+                {/* Jailbreak Row (Nested Data Access) */}
+                <tr className="border-b border-white/5 hover:bg-white/5">
+                  <td className="py-6 text-slate-400">Jailbreak Resistance</td>
+                  {models.map((m) => (
+                    <td
+                      key={m.id}
+                      className="py-6 font-bold text-xl text-white"
+                    >
+                      {m.safety.jailbreakRes}%
+                    </td>
+                  ))}
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Row 4: Descriptions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {models.map((m) => (
-            <div
+            <Link
+              href={`/console/model/${m.id}`}
               key={m.id}
-              className="bg-[#131720] border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col"
+              className="bg-[#131720] border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col hover:border-cyan-500/50 transition-all group cursor-pointer"
             >
-              <h4 className="text-xl font-bold text-white mb-1">{m.name}</h4>
-              <p className="text-sm text-slate-500 mb-4">{m.company}</p>
-              <p className="text-slate-300 leading-relaxed mb-8 flex-1">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">
+                    {m.name}
+                  </h4>
+                  <p className="text-sm text-slate-500 mb-4">{m.company}</p>
+                </div>
+              </div>
+
+              <p className="text-slate-300 leading-relaxed mb-8 flex-1 line-clamp-3">
                 {m.description}
               </p>
-              <button className="w-full py-3 rounded-lg border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all text-white font-medium flex justify-center items-center gap-2">
+
+              <button className="w-full py-3 rounded-lg border border-white/10 group-hover:border-white/30 group-hover:bg-white/5 transition-all text-white font-medium flex justify-center items-center gap-2">
                 View Source <ExternalLink size={16} />
               </button>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -1,5 +1,6 @@
 'use client';
 import { Lock, Code, Sparkles } from 'lucide-react';
+import { mockModels } from '@/app/data/mockModels';
 
 interface FilterSidebarProps {
   selectedCompanies: string[];
@@ -20,6 +21,12 @@ export function FilterSidebar({
   onContextChange,
   isVisibleMobile,
 }: FilterSidebarProps) {
+  // Determine maximum context from mockModels for slider
+  const maxContext = Math.max(...mockModels.map((m) => m.contextVal));
+
+  // Unique companies from mockModels
+  const companies = Array.from(new Set(mockModels.map((m) => m.company)));
+
   return (
     <div
       className={`
@@ -34,16 +41,14 @@ export function FilterSidebar({
           Company
         </h3>
         <div className="space-y-3">
-          {['OpenAI', 'Anthropic', 'Google', 'Meta', 'Mistral', 'xAI'].map(
-            (company) => (
-              <Checkbox
-                key={company}
-                label={company}
-                checked={selectedCompanies.includes(company)}
-                onChange={() => onCompanyChange(company)}
-              />
-            )
-          )}
+          {companies.map((company) => (
+            <Checkbox
+              key={company}
+              label={company}
+              checked={selectedCompanies.includes(company)}
+              onChange={() => onCompanyChange(company)}
+            />
+          ))}
         </div>
       </div>
 
@@ -76,45 +81,32 @@ export function FilterSidebar({
 
       {/* Filter Group: Slider */}
       <div>
-        <div className="flex justify-between mb-4">
-          {/* Label with Cyan Color */}
-          <div className="flex flex-col">
-            <h3 className="text-cyan-400 font-bold text-sm uppercase tracking-wider">
-              Min Context Window
-            </h3>
-            {/* Added the value display next to title like the image */}
-            <span className="text-xl font-bold text-white">
-              {minContext}k{' '}
-              <span className="text-sm font-normal text-slate-400">Tokens</span>
-            </span>
-          </div>
+        <div className="flex justify-between mb-4 flex-col">
+          <h3 className="text-cyan-400 font-bold text-sm uppercase tracking-wider">
+            Min Context Window
+          </h3>
+          <span className="text-xl font-bold text-white">
+            {Math.round(minContext / 1000)}k{' '}
+            <span className="text-sm font-normal text-slate-400">Tokens</span>
+          </span>
         </div>
 
-        {/* 
-      CUSTOM SLIDER LOGIC 
-      We use a style tag here to target the specific webkit-slider-thumb 
-      to get that "Ring" look from your image.
-  */}
         <style jsx>{`
-          /* Target the Slider Handle (Thumb) for Chrome/Safari/Edge */
           input[type='range']::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 24px;
             width: 24px;
             border-radius: 50%;
-            background: #0b0e14; /* Dark center */
-            border: 2px solid #06b6d4; /* Cyan border */
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5); /* Cyan Glow */
+            background: #0b0e14;
+            border: 2px solid #06b6d4;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
             cursor: pointer;
-            margin-top: -8px; /* Center the thumb vertically */
+            margin-top: -8px;
             transition: box-shadow 0.2s;
           }
-
           input[type='range']::-webkit-slider-thumb:hover {
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.9);
           }
-
-          /* Firefox Support */
           input[type='range']::-moz-range-thumb {
             height: 24px;
             width: 24px;
@@ -129,24 +121,23 @@ export function FilterSidebar({
 
         <input
           type="range"
-          min="0"
-          max="1000"
-          step="10"
+          min={0}
+          max={maxContext}
+          step={1000}
           value={minContext}
           onChange={(e) => onContextChange(Number(e.target.value))}
-          // This style creates the "Fill" effect based on the percentage
           style={{
             background: `linear-gradient(to right, #06B6D4 ${
-              (minContext / 1000) * 100
-            }%, rgba(255, 255, 255, 0.1) ${(minContext / 1000) * 100}%)`,
+              (minContext / maxContext) * 100
+            }%, rgba(255, 255, 255, 0.1) ${(minContext / maxContext) * 100}%)`,
           }}
           className="w-full h-2 rounded-lg appearance-none cursor-pointer focus:outline-none"
         />
 
         <div className="flex justify-between mt-2 text-xs text-slate-500 font-mono">
           <span>0k</span>
-          <span>500k</span>
-          <span>1M</span>
+          <span>{Math.round(maxContext / 2000)}k</span>
+          <span>{Math.round(maxContext / 1000)}k</span>
         </div>
       </div>
     </div>
@@ -174,16 +165,12 @@ function Checkbox({
           onChange={onChange}
         />
 
-        {/* Custom Box */}
         <div
-          className={`
-          w-5 h-5 border rounded transition-all flex items-center justify-center
-          ${
+          className={`w-5 h-5 border rounded transition-all flex items-center justify-center ${
             checked
               ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_10px_rgba(34,211,238,0.5)]'
               : 'border-white/20 bg-transparent group-hover:border-white/50'
-          }
-        `}
+          }`}
         >
           {checked && (
             <svg className="w-3 h-3" viewBox="0 0 17 12" fill="none">
