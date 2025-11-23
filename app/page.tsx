@@ -49,7 +49,7 @@ export default function Home() {
       {/* --- Navigation --- */}
       <nav className="flex justify-between items-center px-[5%] py-6 border-b border-white/5 bg-[#0B0E14]/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-2 text-2xl font-bold">
-          <Layers className="text-secondary text-cyan-500" />
+          <Layers className=" text-cyan-500" />
           <span>
             NEURO<span className="text-gradient">DASH</span>
           </span>
@@ -181,12 +181,19 @@ export default function Home() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
+            {/* Card 1 */}
             <FeatureCard
-              className="group p-6 rounded-2xl border border-cyan-500 hover:border-cyan-400 hover:shadow-[0_10px_40px_rgba(6,182,212,0.15)] transition-all duration-300"
+              className="group p-6 rounded-2xl border border-cyan-500 
+               hover:border-cyan-400 hover:shadow-[0_10px_40px_rgba(6,182,212,0.15)] 
+               transition-all duration-300"
               icon={
-                <div className="p-3 rounded-xl border-3 border-purple-500 group-hover:border-cyan-400 transition-all w-16 h-16 flex items-center justify-center">
+                <div
+                  className="p-3 rounded-xl border-3 border-cyan-500 
+                      group-hover:border-cyan-400 transition-all 
+                      w-16 h-16 flex items-center justify-center"
+                >
                   <Zap
-                    className="text-purple-500 group-hover:text-cyan-500 transition-all"
+                    className="text-cyan-500 group-hover:text-cyan-400 transition-all"
                     size={32}
                   />
                 </div>
@@ -194,12 +201,20 @@ export default function Home() {
               title="Real-Time Training"
               desc="Visualize your epochs in real-time with our low-latency websocket connection."
             />
+
+            {/* Card 2 */}
             <FeatureCard
-              className=" p-8 rounded-2xl border border-purple-500 hover:border-cyan-400 hover:shadow-[0_10px_40px_rgba(6,182,212,0.15)] transition-all duration-300"
+              className="group p-6 rounded-2xl border border-cyan-500
+               hover:border-cyan-400 hover:shadow-[0_10px_40px_rgba(6,182,212,0.15)] 
+               transition-all duration-300"
               icon={
-                <div className="p-3 rounded-xl border-3 border-purple-500 group-hover:border-cyan-400 transition-all w-16 h-16 flex items-center justify-center">
+                <div
+                  className="p-3 rounded-xl border-3 border-cyan-500 
+                      group-hover:border-cyan-400 transition-all 
+                      w-16 h-16 flex items-center justify-center"
+                >
                   <Database
-                    className="text-purple-500 group-hover:text-cyan-500 transition-all"
+                    className="text-cyan-500 group-hover:text-cyan-400 transition-all"
                     size={32}
                   />
                 </div>
@@ -207,12 +222,20 @@ export default function Home() {
               title="Auto-Dataset"
               desc="Drag and drop CSVs. We automatically clean, normalize, and split your data."
             />
+
+            {/* Card 3 */}
             <FeatureCard
-              className=" p-6 rounded-2xl border border-purple-500/30 hover:border-cyan-400 hover:border-cyan-400 transition-all duration-300"
+              className="group p-6 rounded-2xl border border-cyan-500
+               hover:border-cyan-400 hover:shadow-[0_10px_40px_rgba(6,182,212,0.15)] 
+               transition-all duration-300"
               icon={
-                <div className="p-3 rounded-xl border-3 border-purple-500 group-hover:border-cyan-400 transition-all w-16 h-16 flex items-center justify-center">
+                <div
+                  className="p-3 rounded-xl border-3 border-cyan-500 
+                      group-hover:border-cyan-400 transition-all 
+                      w-16 h-16 flex items-center justify-center"
+                >
                   <GitBranch
-                    className="text-purple-500 group-hover:text-cyan-500 transition-all"
+                    className="text-cyan-500 group-hover:text-cyan-400 transition-all"
                     size={32}
                   />
                 </div>
@@ -402,14 +425,34 @@ function FeatureCard({
 }) {
   return (
     <div
-      className={`bg-card p-10 rounded-2xl border-3 border-white/5 group hover:border-cyan-400 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(6,182,212,0.1)]  transition-all duration-300 ${
-        className ?? ''
-      }`}
+      className={`
+        group relative p-8 rounded-2xl 
+        bg-[#131720] border border-white/10 
+        transition-all duration-300 
+        hover:border-cyan-500 hover:-translate-y-2 
+        hover:shadow-[0_10px_40px_rgba(6,182,212,0.15)]
+        flex flex-col items-start text-left
+        ${className ?? ''}
+      `}
     >
-      <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-secondary group-hover:text-cya transition-colors">
+      {/* Icon Container - Matches the 'Square' look in your screenshot */}
+      <div
+        className="
+          mb-6 w-16 h-16 rounded-xl 
+          border-2 border-white/10 bg-white/5 
+          flex items-center justify-center 
+          text-cyan-500 
+          transition-all duration-300
+          group-hover:border-cyan-500 group-hover:bg-cyan-500/10 group-hover:scale-110
+        "
+      >
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-4">{title}</h3>
+
+      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
+        {title}
+      </h3>
+
       <p className="text-slate-400 leading-relaxed">{desc}</p>
     </div>
   );

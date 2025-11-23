@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, ListFilter, Filter } from 'lucide-react';
+import { Search, ListFilter, Filter, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { ModelCard } from '@/components/console/model-card';
 import { FilterSidebar } from '@/components/console/filter-sidebar';
@@ -71,9 +71,15 @@ export default function ConsolePage() {
 
       {/* Navbar */}
       <nav className="flex justify-between items-center px-4 md:px-8 py-5 border-b border-white/5 bg-[#0B0E14]/80 backdrop-blur-md sticky top-0 z-50">
-        <Link href="/" className="text-xl md:text-2xl font-bold">
-          <span className="text-cyan-500">NEURO</span>DASH
+        <Link
+          href="/"
+          className="text-xl md:text-2xl font-bold flex items-center gap-2"
+        >
+          <Layers className="text-cyan-500 w-6 h-6" />
+          <span className="text-cyan-500">NEURO</span>
+          <span>DASH</span>
         </Link>
+
         <div className="text-right">
           <p className="text-xs text-slate-400">Total Models</p>
           <p className="text-xl font-bold text-cyan-500">
@@ -85,13 +91,25 @@ export default function ConsolePage() {
       {/* Content */}
       <div className="flex-1 max-w-[1600px] mx-auto w-full p-4 md:p-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            The Normalized Lab Console
-          </h1>
-          <p className="text-slate-400">
-            AI Model Transparency and Comparison Dashboard
-          </p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* Left Side Text */}
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              The Normalized Lab Console
+            </h1>
+            <p className="text-slate-400">
+              AI Model Transparency and Comparison Dashboard
+            </p>
+          </div>
+
+          {/* Evaluate Button */}
+          <Link
+            href="/console/evaluate"
+            className="px-6 py-3 bg-white/5 border border-white/10 text-cyan-400 font-semibold 
+             rounded-xl hover:border-cyan-500 hover:text-cyan-300 transition-all text-center"
+          >
+            Evaluate
+          </Link>
         </div>
 
         {/* Search */}
